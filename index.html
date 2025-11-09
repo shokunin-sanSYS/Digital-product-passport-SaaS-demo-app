@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPP SaaS - デジタルプロダクトパスポート管理システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: #0a0e1a;
+            color: #e4e7eb;
+            overflow-x: hidden;
+        }
+
+        /* タイトルバナー */
+        #title-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2332 0%, #0d1b2a 50%, #1b263b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeOut 0.8s ease 2.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .banner-logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: slideDown 1s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .banner-tagline {
+            font-size: 1.3rem;
+            color: #a0aec0;
+            letter-spacing: 2px;
+            animation: fadeIn 1.2s ease 0.5s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .banner-features {
+            margin-top: 2rem;
+            display: flex;
+            gap: 3rem;
+            animation: fadeIn 1.5s ease 1s both;
+        }
+
+        .banner-feature {
+            font-size: 0.95rem;
+            color: #718096;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid #2d3748;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ヘッダー */
+        .header {
+            background: linear-gradient(135deg, #1e2a38 0%, #0f1923 100%);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #a0aec0;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #4facfe;
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        /* コンテナ */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* グリッドレイアウト */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #1e2a38 0%, #141d2b 100%);
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.15);
+        }
+
+        .metric-label {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            color: #48bb78;
+        }
+
+        .metric-change.negative {
+            color: #f56565;
+        }
+
+        /* グラフエリア */
+        .chart-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: linear-gradient(135deg, #1e2a38 0%, #141d2b 100%);
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e4e7eb;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 280px;
+        }
+
+        /* テーブル */
+        .table-section {
+            background: linear-gradient(135deg, #1e2a38 0%, #141d2b 100%);
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e4e7eb;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #0a0e1a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(79, 172, 254, 0.1);
+            color: #4facfe;
+            border: 1px solid #4facfe;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(79, 172, 254, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(79, 172, 254, 0.05);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #2d3748;
+            color: #e4e7eb;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: rgba(79, 172, 254, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .status-warning {
+            background: rgba(237, 137, 54, 0.2);
+            color: #ed8936;
+            animation: pulse 2s infinite;
+        }
+
+        .status-error {
+            background: rgba(245, 101, 101, 0.2);
+            color: #f56565;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% {
+                opacity: 1;
+            }
+            25%, 75% {
+                opacity: 0.3;
+            }
+        }
+
+        /* アラートエリア */
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            background: linear-gradient(135deg, #2d1b1e 0%, #1e1216 100%);
+            border-left: 4px solid #f56565;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #f56565;
+            margin-bottom: 0.3rem;
+        }
+
+        .alert-description {
+            color: #a0aec0;
+            font-size: 0.85rem;
+        }
+
+        .alert-time {
+            color: #718096;
+            font-size: 0.75rem;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e2a38 0%, #141d2b 100%);
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e4e7eb;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            color: #718096;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #f56565;
+        }
+
+        /* リアルタイムインジケーター */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #48bb78;
+            font-size: 0.85rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* プログレスバー */
+        .progress-container {
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- タイトルバナー -->
+    <div id="title-banner">
+        <div class="banner-logo">DPP SaaS</div>
+        <div class="banner-tagline">デジタルプロダクトパスポート管理システム</div>
+        <div class="banner-features">
+            <div class="banner-feature">EU Battery Regulation準拠</div>
+            <div class="banner-feature">EPCIS 2.0対応</div>
+            <div class="banner-feature">リアルタイム監視</div>
+        </div>
+    </div>
+
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="logo">DPP SaaS</div>
+        <div class="header-right">
+            <div class="nav-item active" onclick="showPage('dashboard')">ダッシュボード</div>
+            <div class="nav-item" onclick="showPage('passports')">パスポート管理</div>
+            <div class="nav-item" onclick="showPage('compliance')">コンプライアンス</div>
+            <div class="nav-item" onclick="showPage('reports')">レポート</div>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                リアルタイム監視中
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- ダッシュボードページ -->
+        <div id="dashboard-page">
+            <!-- アラートセクション -->
+            <div class="alerts-section" id="alerts-container"></div>
+
+            <!-- メトリクスグリッド -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">発行済DPP総数</div>
+                    <div class="metric-value" id="total-dpp">800</div>
+                    <div class="metric-change">前月比 +12.5%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 88%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">準拠率</div>
+                    <div class="metric-value" id="compliance-rate">88<span style="font-size: 1.2rem;">%</span></div>
+                    <div class="metric-change">目標: 95%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 88%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">処理時間短縮率</div>
+                    <div class="metric-value" id="efficiency">80<span style="font-size: 1.2rem;">%</span></div>
+                    <div class="metric-change">平均処理時間: 2.3時間</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">投資回収期間</div>
+                    <div class="metric-value" id="roi">3<span style="font-size: 1.2rem;">ヶ月</span></div>
+                    <div class="metric-change">業界平均: 8ヶ月</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 95%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- グラフセクション -->
+            <div class="chart-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">DPP発行推移 - リアルタイム</div>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            更新中
+                        </div>
+                    </div>
+                    <canvas id="lineChart" class="chart-canvas"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">規制準拠状況</div>
+                    </div>
+                    <canvas id="pieChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- テーブルセクション -->
+            <div class="table-section">
+                <div class="table-header">
+                    <div class="table-title">最近のDPP発行履歴</div>
+                    <button class="btn btn-primary" onclick="generateReport()">監査レポート生成</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>パスポートID</th>
+                            <th>製品名</th>
+                            <th>バッチ番号</th>
+                            <th>規制</th>
+                            <th>ステータス</th>
+                            <th>発行日時</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dpp-table">
+                        <tr>
+                            <td>DPP-2025-001247</td>
+                            <td>リチウムイオン電池モジュール</td>
+                            <td>BATCH-20251107-A</td>
+                            <td>EU Battery Regulation</td>
+                            <td><span class="status-badge status-active">準拠</span></td>
+                            <td>2025-11-07 14:32:15</td>
+                        </tr>
+                        <tr>
+                            <td>DPP-2025-001246</td>
+                            <td>自動車用バッテリーパック</td>
+                            <td>BATCH-20251107-B</td>
+                            <td>ESPR</td>
+                            <td><span class="status-badge status-active">準拠</span></td>
+                            <td>2025-11-07 14:28:43</td>
+                        </tr>
+                        <tr>
+                            <td>DPP-2025-001245</td>
+                            <td>正極材料 - NCM811</td>
+                            <td>BATCH-20251107-C</td>
+                            <td>EU Battery Regulation</td>
+                            <td><span class="status-badge status-warning">要確認</span></td>
+                            <td>2025-11-07 14:15:22</td>
+                        </tr>
+                        <tr>
+                            <td>DPP-2025-001244</td>
+                            <td>電解液コンポーネント</td>
+                            <td>BATCH-20251106-D</td>
+                            <td>ESPR</td>
+                            <td><span class="status-badge status-error">不適合</span></td>
+                            <td>2025-11-06 18:45:11</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- パスポート管理ページ -->
+        <div id="passports-page" style="display: none;">
+            <div class="chart-card" style="margin-bottom: 2rem;">
+                <div class="chart-header">
+                    <div class="chart-title">パスポート管理 - EPCIS 2.0準拠</div>
+                    <button class="btn btn-primary">新規DPP発行</button>
+                </div>
+                <div style="padding: 2rem 0;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <div style="color: #718096; margin-bottom: 0.5rem; font-size: 0.85rem;">発行待ち</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #4facfe;">23</div>
+                        </div>
+                        <div>
+                            <div style="color: #718096; margin-bottom: 0.5rem; font-size: 0.85rem;">検証中</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #ed8936;">8</div>
+                        </div>
+                        <div>
+                            <div style="color: #718096; margin-bottom: 0.5rem; font-size: 0.85rem;">完了</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #48bb78;">769</div>
+                        </div>
+                    </div>
+                    <canvas id="barChart" style="width: 100%; height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- コンプライアンスページ -->
+        <div id="compliance-page" style="display: none;">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">規制コンプライアンス監視</div>
+                </div>
+                <div style="padding: 2rem 0;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                        <div style="padding: 2rem; background: rgba(79, 172, 254, 0.05); border-radius: 8px;">
+                            <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">EU Battery Regulation</div>
+                            <div style="font-size: 2.5rem; font-weight: 700; color: #48bb78; margin-bottom: 1rem;">92%</div>
+                            <div style="color: #718096;">準拠率 - 目標: 95%</div>
+                            <div class="progress-container" style="margin-top: 1rem;">
+                                <div class="progress-bar" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div style="padding: 2rem; background: rgba(79, 172, 254, 0.05); border-radius: 8px;">
+                            <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">ESPR Requirements</div>
+                            <div style="font-size: 2.5rem; font-weight: 700; color: #4facfe; margin-bottom: 1rem;">84%</div>
+                            <div style="color: #718096;">準拠率 - 目標: 90%</div>
+                            <div class="progress-container" style="margin-top: 1rem;">
+                                <div class="progress-bar" style="width: 84%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="complianceChart" style="width: 100%; height: 300px; margin-top: 2rem;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- レポートページ -->
+        <div id="reports-page" style="display: none;">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">監査レポート生成</div>
+                </div>
+                <div style="padding: 2rem 0;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <label style="display: block; color: #718096; margin-bottom: 0.5rem; font-size: 0.85rem;">レポート種別</label>
+                            <select style="width: 100%; padding: 0.8rem; background: #0a0e1a; border: 1px solid #2d3748; border-radius: 6px; color: #e4e7eb;">
+                                <option>月次監査レポート</option>
+                                <option>規制準拠状況報告</option>
+                                <option>DPP発行履歴</option>
+                                <option>品質分析レポート</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #718096; margin-bottom: 0.5rem; font-size: 0.85rem;">対象期間</label>
+                            <select style="width: 100%; padding: 0.8rem; background: #0a0e1a; border: 1px solid #2d3748; border-radius: 6px; color: #e4e7eb;">
+                                <option>過去7日間</option>
+                                <option>過去30日間</option>
+                                <option>過去90日間</option>
+                                <option>カスタム期間</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateFullReport()" style="width: 100%; padding: 1rem; font-size: 1rem;">レポート生成開始</button>
+                    <div id="report-status" style="margin-top: 2rem; padding: 1.5rem; background: rgba(79, 172, 254, 0.05); border-radius: 8px; display: none;">
+                        <div style="font-weight: 600; margin-bottom: 1rem;">レポート生成中...</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="report-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">監査レポート</div>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="report-content">
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #4facfe; margin-bottom: 1rem;">DPP SaaS 月次監査レポート</h3>
+                    <div style="color: #718096; font-size: 0.9rem;">生成日時: <span id="report-date"></span></div>
+                </div>
+
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(79, 172, 254, 0.05); border-radius: 8px;">
+                    <h4 style="color: #e4e7eb; margin-bottom: 1rem;">エグゼクティブサマリー</h4>
+                    <p style="color: #a0aec0; line-height: 1.8;">
+                        当月のDPP発行総数は800件に達し、前月比12.5%の増加を記録しました。
+                        EU Battery Regulation準拠率は88%、処理時間は平均2.3時間まで短縮され、
+                        業界標準を大きく上回る効率を実現しています。
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #e4e7eb; margin-bottom: 1rem;">主要指標</h4>
+                    <table>
+                        <tr>
+                            <td>総発行数</td>
+                            <td style="text-align: right; font-weight: 600;">800件</td>
+                        </tr>
+                        <tr>
+                            <td>準拠率</td>
+                            <td style="text-align: right; font-weight: 600;">88%</td>
+                        </tr>
+                        <tr>
+                            <td>平均処理時間</td>
+                            <td style="text-align: right; font-weight: 600;">2.3時間</td>
+                        </tr>
+                        <tr>
+                            <td>ROI達成期間</td>
+                            <td style="text-align: right; font-weight: 600;">3ヶ月</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(72, 187, 120, 0.1); border-radius: 8px; border-left: 4px solid #48bb78;">
+                    <h4 style="color: #48bb78; margin-bottom: 1rem;">推奨アクション</h4>
+                    <ul style="color: #a0aec0; line-height: 1.8; padding-left: 1.5rem;">
+                        <li>不適合案件4件の再審査を48時間以内に実施</li>
+                        <li>準拠率95%達成に向けた追加トレーニングの実施</li>
+                        <li>EPCIS 2.0準拠プロセスの最適化</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-primary" onclick="downloadReport()" style="width: 100%; padding: 1rem;">PDFダウンロード</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // データ更新用の変数
+        let dppCount = 800;
+        let complianceRate = 88;
+        let alertShown = false;
+
+        // ページ切り替え
+        function showPage(pageName) {
+            document.querySelectorAll('[id$="-page"]').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageName + '-page').style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // ページごとにグラフを初期化
+            if (pageName === 'passports') {
+                initBarChart();
+            } else if (pageName === 'compliance') {
+                initComplianceChart();
+            }
+        }
+
+        // リアルタイムデータ更新
+        function updateMetrics() {
+            // DPP総数を増加
+            if (Math.random() > 0.5) {
+                dppCount += Math.floor(Math.random() * 3);
+                document.getElementById('total-dpp').textContent = dppCount;
+            }
+
+            // 準拠率を変動
+            if (Math.random() > 0.7) {
+                complianceRate = Math.min(95, complianceRate + (Math.random() > 0.5 ? 1 : -1));
+                document.getElementById('compliance-rate').innerHTML = 
+                    Math.round(complianceRate) + '<span style="font-size: 1.2rem;">%</span>';
+            }
+
+            // ランダムアラート生成
+            if (!alertShown && Math.random() > 0.95) {
+                showAlert();
+                alertShown = true;
+                setTimeout(() => alertShown = false, 10000);
+            }
+        }
+
+        // アラート表示
+        function showAlert() {
+            const alerts = [
+                {
+                    title: '要注意: 規制準拠確認が必要です',
+                    description: 'バッチBATCH-20251107-Cの炭素排出量データが基準値を超過しています',
+                    time: '2分前'
+                },
+                {
+                    title: '警告: データ不整合を検出',
+                    description: 'DPP-2025-001244のトレーサビリティチェーンに欠損があります',
+                    time: '5分前'
+                }
+            ];
+
+            const alert = alerts[Math.floor(Math.random() * alerts.length)];
+            const alertHtml = `
+                <div class="alert">
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-description">${alert.description}</div>
+                    </div>
+                    <div class="alert-time">${alert.time}</div>
+                </div>
+            `;
+            
+            const container = document.getElementById('alerts-container');
+            container.innerHTML = alertHtml + container.innerHTML;
+        }
+
+        // 折れ線グラフ
+        function initLineChart() {
+            const canvas = document.getElementById('lineChart');
+            const ctx = canvas.getContext('2d');
+            
+            let data = [650, 680, 720, 750, 770, 785, 800];
+            const labels = ['10/1', '10/8', '10/15', '10/22', '10/29', '11/5', '今日'];
+            
+            function drawLineChart() {
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                // グリッド
+                ctx.strokeStyle = '#2d3748';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = (height / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+                
+                // データライン
+                const padding = 40;
+                const graphWidth = width - padding * 2;
+                const graphHeight = height - padding * 2;
+                const stepX = graphWidth / (data.length - 1);
+                const max = Math.max(...data) * 1.1;
+                
+                ctx.strokeStyle = '#4facfe';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                data.forEach((value, index) => {
+                    const x = padding + stepX * index;
+                    const y = height - padding - (value / max) * graphHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+                
+                // データポイント
+                data.forEach((value, index) => {
+                    const x = padding + stepX * index;
+                    const y = height - padding - (value / max) * graphHeight;
+                    
+                    ctx.fillStyle = '#00f2fe';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                // ラベル
+                ctx.fillStyle = '#718096';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                labels.forEach((label, index) => {
+                    const x = padding + stepX * index;
+                    ctx.fillText(label, x, height - 10);
+                });
+            }
+            
+            drawLineChart();
+            
+            // リアルタイム更新
+            setInterval(() => {
+                if (Math.random() > 0.6) {
+                    data.shift();
+                    data.push(data[data.length - 1] + Math.floor(Math.random() * 5));
+                    drawLineChart();
+                }
+            }, 3000);
+        }
+
+        // 円グラフ
+        function initPieChart() {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            
+            const data = [
+                { label: '完全準拠', value: 88, color: '#48bb78' },
+                { label: '要確認', value: 8, color: '#ed8936' },
+                { label: '不適合', value: 4, color: '#f56565' }
+            ];
+            
+            function drawPieChart() {
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                const centerX = width / 2;
+                const centerY = height / 2 - 20;
+                const radius = Math.min(width, height) / 3;
+                
+                let currentAngle = -Math.PI / 2;
+                const total = data.reduce((sum, item) => sum + item.value, 0);
+                
+                data.forEach((item, index) => {
+                    const sliceAngle = (item.value / total) * Math.PI * 2;
+                    
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // ラベル
+                    const labelAngle = currentAngle + sliceAngle / 2;
+                    const labelX = centerX + Math.cos(labelAngle) * (radius + 40);
+                    const labelY = centerY + Math.sin(labelAngle) * (radius + 40);
+                    
+                    ctx.fillStyle = '#e4e7eb';
+                    ctx.font = '14px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.label, labelX, labelY);
+                    ctx.fillText(item.value + '%', labelX, labelY + 18);
+                    
+                    currentAngle += sliceAngle;
+                });
+            }
+            
+            drawPieChart();
+        }
+
+        // 棒グラフ
+        function initBarChart() {
+            const canvas = document.getElementById('barChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const data = [23, 45, 67, 89, 112, 145, 178];
+            const labels = ['月', '火', '水', '木', '金', '土', '日'];
+            
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const barWidth = (width - padding * 2) / data.length * 0.7;
+            const max = Math.max(...data) * 1.1;
+            
+            data.forEach((value, index) => {
+                const x = padding + (width - padding * 2) / data.length * index;
+                const barHeight = (value / max) * (height - padding * 2);
+                const y = height - padding - barHeight;
+                
+                const gradient = ctx.createLinearGradient(0, y, 0, height - padding);
+                gradient.addColorStop(0, '#4facfe');
+                gradient.addColorStop(1, '#00f2fe');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                ctx.fillStyle = '#718096';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[index], x + barWidth / 2, height - 10);
+                ctx.fillText(value, x + barWidth / 2, y - 10);
+            });
+        }
+
+        // コンプライアンスグラフ
+        function initComplianceChart() {
+            const canvas = document.getElementById('complianceChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const data = [
+                { label: 'Battery Reg', value: 92 },
+                { label: 'ESPR', value: 84 },
+                { label: 'EPCIS', value: 96 },
+                { label: 'Carbon', value: 78 }
+            ];
+            
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 60;
+            const barHeight = 40;
+            const spacing = 20;
+            
+            data.forEach((item, index) => {
+                const y = padding + (barHeight + spacing) * index;
+                const barWidth = ((width - padding * 2) * item.value) / 100;
+                
+                // 背景バー
+                ctx.fillStyle = 'rgba(79, 172, 254, 0.1)';
+                ctx.fillRect(padding, y, width - padding * 2, barHeight);
+                
+                // 値バー
+                const gradient = ctx.createLinearGradient(padding, 0, padding + barWidth, 0);
+                gradient.addColorStop(0, '#4facfe');
+                gradient.addColorStop(1, '#00f2fe');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(padding, y, barWidth, barHeight);
+                
+                // ラベル
+                ctx.fillStyle = '#e4e7eb';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(item.label, padding, y - 10);
+                
+                // 値
+                ctx.fillStyle = '#4facfe';
+                ctx.textAlign = 'right';
+                ctx.fillText(item.value + '%', width - padding, y + barHeight / 2 + 5);
+            });
+        }
+
+        // レポート生成
+        function generateReport() {
+            document.getElementById('report-date').textContent = new Date().toLocaleString('ja-JP');
+            document.getElementById('report-modal').classList.add('active');
+        }
+
+        function generateFullReport() {
+            const status = document.getElementById('report-status');
+            const progress = document.getElementById('report-progress');
+            
+            status.style.display = 'block';
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                        progress.style.width = '0%';
+                        generateReport();
+                    }, 500);
+                } else {
+                    width += Math.random() * 15;
+                    progress.style.width = Math.min(width, 100) + '%';
+                }
+            }, 300);
+        }
+
+        function downloadReport() {
+            alert('レポートのPDFダウンロードを開始します。\n\n※このデモでは実際のダウンロードは行われません。');
+        }
+
+        function closeModal() {
+            document.getElementById('report-modal').classList.remove('active');
+        }
+
+        // 初期化
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                initLineChart();
+                initPieChart();
+                setInterval(updateMetrics, 2000);
+            }, 2600);
+        });
+
+        // モーダル外クリックで閉じる
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('report-modal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
